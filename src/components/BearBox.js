@@ -1,14 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { reset, useBearStore, increaseOneBear, removeOneBear, removeAllBear } from '../store/bear'
 import { useFishStore } from '../store/fish'
 
 export default function BearBox() {
+    const [color, setColor] = useState(true)
     const baersCount = useBearStore(state => state.count)
-    const fishStore = useFishStore(state => state.count)
+
+    useEffect(() => {
+        const unsub = useFishStore.subscribe((state, preState) => {
+            if (state.count > 5 && preState.count <= 5) {
+                setColor(false)
+            }
+            if (state.count <= 5 && preState.count > 5) {
+                setColor(true)
+            }
+        })
+        return unsub
+    }, [])
+    
     return (
         <>
             <h1>BearBox [ {Math.random()} ]  </h1>
-            <p>{fishStore <= 5 ? <span style={{ color: 'lightpink' }}>danger!!! fish is empty!!!</span> : <span style={{ color: 'lightgreen' }}>oops!!! fish is enough!!!</span>}</p>
+            <p>{color ? <span style={{ color: 'lightpink' }}>danger!!! fish is empty!!!</span> : <span style={{ color: 'lightgreen' }}>oops!!! fish is enough!!!</span>}</p>
             <div>bear count : {baersCount}</div>
             <button onClick={increaseOneBear}>increase one bear</button>
             <button onClick={removeOneBear}>remove one bear</button>
