@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
+import { devtools, persist, subscribeWithSelector } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
 const initialValue = {
@@ -9,16 +9,18 @@ const initialValue = {
     }
 }
 export const useFoodStore = create(
-    devtools(
-        persist(
-            () => initialValue,
+    subscribeWithSelector(
+        devtools(
+            persist(
+                () => initialValue,
+                {
+                    name: 'food store'
+                }
+            ),
             {
                 name: 'food store'
             }
-        ),
-        {
-            name: 'food store'
-        }
+        )
     )
 )
 export const increaseOneWater = () => useFoodStore.setState(state => (
